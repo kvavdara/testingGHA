@@ -1,4 +1,4 @@
-name: Deploy Static Website to S3
+name: Connection between AWS-GitHubAction using OIDC to test AWS CLI
  
 on:
   push:
@@ -25,3 +25,4 @@ jobs:
  
       - name: Test AWS CLI
         run: aws sts get-caller-identity
+             aws s3 ls s3://kishor-testing-gha
