@@ -24,5 +24,6 @@ jobs:
           aws-region: "us-east-1"
  
       - name: Test AWS CLI
-        run: aws sts get-caller-identity
-        run: aws s3 ls s3://kishor-testing-gha
+        run: |
+          aws sts get-caller-identity
+          aws s3 ls s3://kishor-testing-gha
