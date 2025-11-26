@@ -27,3 +27,8 @@ jobs:
         run: |
           aws sts get-caller-identity
           aws s3 ls s3://kishor-testing-gha
+
+      - name: Uploadfile to S3
+        run: |
+          echo "Uploading file..."
+          aws s3 cp my-static-site/index.html s3://kishor-testing-gha/my-static-site/index.html
