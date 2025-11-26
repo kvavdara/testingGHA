@@ -32,3 +32,7 @@ jobs:
         run: |
           echo "Uploading file..."
           aws s3 cp my-static-site/index.html s3://kishor-testing-gha/my-static-site/index.html
+
+      - name : Sync files to S3
+        run: |
+          aws s3 sync . s3://kishor-testing-gha --delete
