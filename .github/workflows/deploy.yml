@@ -1,9 +1,6 @@
 name: Connection between AWS-GitHubAction using OIDC to test AWS CLI
  
 on:
-  push:
-    branches:
-      - main
 
 permissions:
   id-token: write

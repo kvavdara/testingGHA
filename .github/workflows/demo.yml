@@ -1,0 +1,51 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Choose action: register or deregister'
+        required: true
+        default: 'register'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # Required for OIDC
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::992382710551:role/gha-test-role 
+          aws-region: us-east-1
+
+      - name: Get running EC2 instances in ASG
+        id: ec2
+        run: |
+          INSTANCE_IDS=$(aws ec2 describe-instances \
+            --filters "Name=instance-state-name,Values=running" \
+                      "Name=tag:aws:autoscaling:groupName,Values=ASG-demo" \
+            --query "Reservations[*].Instances[*].InstanceId" \
+            --output text)
+          echo "INSTANCE_IDS=$INSTANCE_IDS" >> $GITHUB_ENV
+
+      - name: Register/Deregister instances in Target Group
+        run: |
+          if [ "${{ github.event.inputs.action }}" = "register" ]; then
+            aws elbv2 register-targets \
+              --target-group-arn <TARGET_GROUP_ARN> \
+              --targets Id=$INSTANCE_IDS
+          else
+            aws elbv2 deregister-targets \
+              --target-group-arn <TARGET_GROUP_ARN> \
+              --targets Id=$INSTANCE_IDS
+          fi
